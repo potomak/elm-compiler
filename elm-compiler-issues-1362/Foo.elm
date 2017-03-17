@@ -1,0 +1,61 @@
+module Foo exposing (..)
+
+import Date exposing (Month (..))
+
+compareMonth : Month -> Month -> Order
+compareMonth m1 m2 =
+  case (m1, m2) of
+    (Jan, Jan) -> EQ
+    (Jan, _)   -> LT
+    (Feb, Jan) -> GT
+    (Feb, Feb) -> EQ
+    (Feb, _)   -> LT
+    (Mar, Jan) -> GT
+    (Mar, Feb) -> GT
+    (Mar, Mar) -> EQ
+    (Mar, _)   -> LT
+    (Apr, Jan) -> GT
+    (Apr, Feb) -> GT
+    (Apr, Mar) -> GT
+    (Apr, Apr) -> EQ
+    (Apr, _)   -> LT
+    (May, Jan) -> GT
+    (May, Feb) -> GT
+    (May, Mar) -> GT
+    (May, Apr) -> GT
+    (May, May) -> EQ
+    (May, _)   -> LT
+    (Jun, Jan) -> GT
+    (Jun, Feb) -> GT
+    (Jun, Mar) -> GT
+    (Jun, Apr) -> GT
+    (Jun, May) -> GT
+    (Jun, Jun) -> EQ
+    (Jun, _)   -> EQ
+    (Jul, Dec) -> LT
+    (Jul, Nov) -> LT
+    (Jul, Oct) -> LT
+    (Jul, Sep) -> LT                                                                                                                                                    
+    (Jul, Aug) -> LT                                                                                                                                                    
+    (Jul, Jul) -> EQ                                                                                                                                                    
+    (Jul, _)   -> GT
+    (Aug, Dec) -> LT
+    (Aug, Nov) -> LT
+    (Aug, Oct) -> LT
+    (Aug, Sep) -> LT
+    (Aug, Aug) -> EQ
+    (Aug, _)   -> GT
+    (Sep, Dec) -> LT
+    (Sep, Nov) -> LT
+    (Sep, Oct) -> LT
+    (Sep, Sep) -> EQ
+    (Sep, _)   -> GT
+    (Oct, Dec) -> LT
+    (Oct, Nov) -> LT
+    (Oct, Oct) -> EQ
+    (Oct, _)   -> GT
+    (Nov, Dec) -> LT
+    (Nov, Nov) -> EQ
+    (Nov, _)   -> GT
+    (Dec, Dec) -> EQ
+    (Dec, _)   -> GT
