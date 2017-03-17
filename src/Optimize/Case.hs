@@ -2,8 +2,8 @@
 module Optimize.Case (optimize) where
 
 import Control.Arrow (second)
-import qualified Data.Map as Map
-import Data.Map ((!))
+import qualified Data.IntMap as Map
+import Data.IntMap ((!))
 import qualified Data.Maybe as Maybe
 import Data.Text (Text)
 
@@ -11,13 +11,15 @@ import qualified AST.Expression.Optimized as Opt
 import qualified AST.Pattern as P
 import qualified Optimize.DecisionTree as DT
 
+import Debug.Trace
+
 
 
 -- OPTIMIZE A CASE EXPRESSION
 
 
 optimize :: DT.VariantDict -> Text -> [(P.Canonical, Opt.Expr)] -> Opt.Expr
-optimize variantDict exprName optBranches =
+optimize variantDict exprName optBranches = trace "optimizing..." $
   let
     (patterns, indexedBranches) =
       unzip (zipWith indexify [0..] optBranches)
@@ -40,7 +42,7 @@ indexify index (pattern, branch) =
 
 
 treeToExpr :: Text -> DT.DecisionTree -> [(Int, Opt.Expr)] -> Opt.Expr
-treeToExpr name decisionTree allJumps =
+treeToExpr name decisionTree allJumps = trace "treeToExpr..." $
   let
     decider =
         treeToDecider decisionTree
@@ -65,7 +67,7 @@ treeToExpr name decisionTree allJumps =
 
 
 treeToDecider :: DT.DecisionTree -> Opt.Decider Int
-treeToDecider tree =
+treeToDecider tree = trace "treeToDecider..." $
   case tree of
     DT.Match target ->
         Opt.Leaf target
@@ -104,7 +106,7 @@ treeToDecider tree =
 
 
 toChain :: DT.Path -> DT.Test -> DT.DecisionTree -> DT.DecisionTree -> Opt.Decider Int
-toChain path test successTree failureTree =
+toChain path test successTree failureTree = trace "toChain..." $
   let
     failure =
       treeToDecider failureTree
@@ -124,8 +126,8 @@ toChain path test successTree failureTree =
 -- can be inlined. Whether things are inlined or jumps is called a "choice".
 
 
-countTargets :: Opt.Decider Int -> Map.Map Int Int
-countTargets decisionTree =
+countTargets :: Opt.Decider Int -> Map.IntMap Int
+countTargets decisionTree = trace "countTargets..." $
   case decisionTree of
     Opt.Leaf target ->
         Map.singleton target 1
@@ -138,10 +140,10 @@ countTargets decisionTree =
 
 
 createChoices
-    :: Map.Map Int Int
+    :: Map.IntMap Int
     -> (Int, Opt.Expr)
     -> ( (Int, Opt.Choice), Maybe (Int, Opt.Expr) )
-createChoices targetCounts (target, branch) =
+createChoices targetCounts (target, branch) = trace "createChoices..." $
     if targetCounts ! target == 1 then
         ( (target, Opt.Inline branch)
         , Nothing
@@ -154,10 +156,10 @@ createChoices targetCounts (target, branch) =
 
 
 insertChoices
-    :: Map.Map Int Opt.Choice
+    :: Map.IntMap Opt.Choice
     -> Opt.Decider Int
     -> Opt.Decider Opt.Choice
-insertChoices choiceDict decider =
+insertChoices choiceDict decider = trace "insertChoices..." $
   let
     go =
       insertChoices choiceDict
@@ -171,4 +173,3 @@ insertChoices choiceDict decider =
 
       Opt.FanOut path tests fallback ->
           Opt.FanOut path (map (second go) tests) (go fallback)
-

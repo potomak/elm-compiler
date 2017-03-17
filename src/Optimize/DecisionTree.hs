@@ -25,6 +25,8 @@ import qualified AST.Pattern as P
 import qualified AST.Variable as Var
 import qualified Reporting.Annotation as A
 
+import Debug.Trace
+
 
 type CPattern = P.Canonical
 
@@ -41,7 +43,7 @@ make that work nicely. When is JS getting goto?! ;) That is outside the scope
 of this module though.
 -}
 compile :: VariantDict -> [(CPattern, Int)] -> DecisionTree
-compile variantDict rawBranches =
+compile variantDict rawBranches = trace "compile..." $
   let
     format (pattern, index) =
         Branch index [(Empty, pattern)]
